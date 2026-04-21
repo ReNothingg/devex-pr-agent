@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Devex</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="workspace-grid">
+        <aside class="sidebar sidebar-left">
+          <section class="block">
+            <div class="block-head">
+              <p class="block-label">GitHub</p>
+            </div>
+
+            <div class="button-row">
+              <button class="button button-primary" id="connect-github-button" type="button">
+                Подключить
+              </button>
+              <button class="button" id="disconnect-github-button" type="button">Отключить</button>
+            </div>
+
+            <div class="button-row button-row-stack">
+              <button class="button" id="install-github-app-button" type="button">
+                Установить / открыть приложение
+              </button>
+            </div>
+          </section>
+
+          <section class="block" id="auth-status">
+            <p class="empty-copy">GitHub не подключен.</p>
+          </section>
+
+          <section class="block" id="auth-picker" hidden>
+            <div class="block-head">
+              <p class="block-label">Установки</p>
+            </div>
+
+            <label class="field" id="installation-field">
+              <span>Активная установка</span>
+              <select id="installation-select"></select>
+            </label>
+          </section>
+
+          <section class="block repo-browser">
+            <div class="block-head">
+              <div>
+                <p class="block-label">Репозитории</p>
+                <p class="block-copy" id="repo-list-caption">Список пуст.</p>
+              </div>
+            </div>
+
+            <input id="repo-list-search" type="search" placeholder="Поиск" />
+            <div class="repo-list" id="repo-list"></div>
+          </section>
+
+          <section class="block">
+            <div class="block-head">
+              <p class="block-label">Репозиторий</p>
+            </div>
+
+            <label class="field">
+              <span>Ссылка на репозиторий</span>
+              <input id="repo-url" type="url" placeholder="https://github.com/owner/repo" />
+            </label>
+
+            <label class="field">
+              <span>Базовая ветка</span>
+              <input id="base-branch" type="text" placeholder="main" />
+            </label>
+
+            <label class="field">
+              <span>Токен</span>
+              <input
+                id="token-input"
+                type="password"
+                placeholder="Необязательно"
+                autocomplete="off"
+              />
+            </label>
+
+            <div class="button-row">
+              <button class="button" id="check-token-button" type="button">Проверить токен</button>
+              <button class="button button-primary" id="load-repo-button" type="button">
+                Загрузить
+              </button>
+            </div>
+          </section>
+
+          <section class="block" id="token-status" hidden>
+            <p class="empty-copy">Токен еще не проверен.</p>
+          </section>
+        </aside>
+
+        <section class="editor-panel">
+          <section class="block repo-block" id="repo-summary" hidden>
+            <p class="empty-copy">Репозиторий не открыт.</p>
+          </section>
+
+          <div class="editor-header">
+            <p class="editor-path" id="active-path">Файл не выбран.</p>
+
+            <div class="header-meta" hidden>
+              <span class="meta-chip" id="ref-pill">базовая ветка</span>
+              <span class="meta-chip" id="dirty-pill">чисто</span>
+            </div>
+          </div>
+
+          <div class="editor-area">
+            <div class="files-panel block">
+              <div class="block-head">
+                <div>
+                  <p class="block-label">Файлы</p>
+                  <p class="block-copy" id="tree-caption" hidden>Пусто.</p>
+                </div>
+
+                <div class="header-meta compact-meta" id="tree-stats" hidden>
+                  <span class="meta-chip">0 файлов</span>
+                  <span class="meta-chip">0 папок</span>
+                </div>
+              </div>
+
+              <div class="toolbar-row">
+                <input id="tree-search" type="search" placeholder="Поиск" />
+                <div class="button-row button-row-inline">
+                  <button class="button button-small" id="expand-tree-button" type="button">
+                    Все
+                  </button>
+                  <button class="button button-small" id="collapse-tree-button" type="button">
+                    Скрыть
+                  </button>
+                </div>
+              </div>
+
+              <div class="file-tree" id="file-tree" aria-live="polite"></div>
+            </div>
+
+            <div class="editor-stack">
+              <textarea
+                id="editor"
+                spellcheck="false"
+                placeholder="// Код"
+              ></textarea>
+
+              <div class="status-strip">
+                <p id="status-text">Готово.</p>
+                <a id="external-link" href="#" target="_blank" rel="noreferrer" hidden>Открыть на GitHub</a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="sidebar sidebar-right">
+          <section class="block" id="selection-card" hidden>
+            <p class="empty-copy">Файл не выбран.</p>
+          </section>
+
+          <section class="block">
+            <div class="block-head">
+              <p class="block-label">Коммит</p>
+            </div>
+
+            <label class="field">
+              <span>Суффикс ветки</span>
+              <input id="branch-suffix" type="text" placeholder="change" />
+            </label>
+
+            <div class="preview-block">
+              <span class="preview-label">Ветка</span>
+              <strong id="branch-preview">devex/session</strong>
+            </div>
+
+            <label class="field">
+              <span>Сообщение коммита</span>
+              <input id="commit-message" type="text" placeholder="Обновить файл" />
+            </label>
+
+            <button class="button button-primary" id="save-button" type="button" disabled>
+              Закоммитить
+            </button>
+          </section>
+
+          <section class="block">
+            <div class="block-head">
+              <p class="block-label">PR</p>
+            </div>
+
+            <label class="field">
+              <span>Заголовок</span>
+              <input id="pr-title" type="text" placeholder="Проверить devex/change" />
+            </label>
+
+            <label class="field">
+              <span>Описание</span>
+              <textarea id="pr-body" rows="8" placeholder="Кратко"></textarea>
+            </label>
+
+            <button class="button" id="pr-button" type="button" disabled>Открыть PR</button>
+          </section>
+
+          <section class="block activity-log" id="activity-log" hidden>
+            <p class="empty-copy">Пусто.</p>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
