@@ -1,22 +1,8 @@
 # Devex
 
-Devex — веб-интерфейс для GitHub: открыть репозиторий, отредактировать текстовый файл, закоммитить изменения в отдельную ветку и сразу создать PR.
+Devex — приложение для GitHub которое может открыть репозиторий, отредактировать текстовый файл, закоммитить изменения в отдельную ветку и сразу создать PR.
 
-## Возможности
-
-- подключение через `GITHUB_TOKEN` или GitHub App
-- анонимное чтение публичных репозиториев
-- просмотр дерева файлов и содержимого UTF-8 файлов
-- сохранение изменений в ветку вида `devex/<suffix>`
-- создание Pull Request прямо из интерфейса
-
-## Стек
-
-- Flask
-- GitHub REST API
-- Vanilla JavaScript
-
-## Быстрый старт
+## Старт
 
 ```bash
 python3 -m venv .venv
@@ -30,7 +16,7 @@ python backend/app.py
 
 ## Настройка `.env`
 
-Минимальная конфигурация уже показана в `.env.example`.
+Мин. конфигурация уже показана в `.env.example`.
 
 - `FLASK_SECRET_KEY` — секрет Flask-сессий
 - `GITHUB_TOKEN` — необязательный Personal Access Token для fallback-сценариев
@@ -38,30 +24,16 @@ python backend/app.py
 - `GITHUB_APP_PRIVATE_KEY_PATH` или `GITHUB_APP_PRIVATE_KEY` — приватный ключ GitHub App
 - `PORT` — порт локального сервера
 
-Пример локальной конфигурации:
-
-```env
-FLASK_SECRET_KEY=change-me
-GITHUB_APP_ID=123456
-GITHUB_APP_CLIENT_ID=Iv23xxxxxxxxxxxx
-GITHUB_APP_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-GITHUB_APP_SLUG=your-app-slug
-GITHUB_APP_PRIVATE_KEY_PATH=github-app.private-key.pem
-PORT=5000
-```
-
 Для чтения публичных репозиториев токен не обязателен. Для коммитов и PR нужен либо `GITHUB_TOKEN` с доступом на запись, либо корректно настроенный GitHub App с правами на запись в репозиторий.
 
 ## Настройка GitHub App
-
-Ниже — минимальная и безопасная конфигурация GitHub App для текущего сценария Devex: открыть репозиторий, изменить файл, создать отдельную ветку и открыть Pull Request.
 
 ### Что заполнить в GitHub App
 
 При создании GitHub App укажите следующие значения:
 
 - **GitHub App name** — любое имя приложения
-- **Homepage URL** — `http://localhost:5000`
+- **Homepage URL** — `http://localhost:5000` (или другой адрес, по которому будет доступно приложение)
 - **Callback URL** — `http://localhost:5000/auth/github/callback`
 - **Setup URL** — `http://localhost:5000/auth/github/setup`
 
@@ -69,60 +41,62 @@ PORT=5000
 
 ### Какие опции включить
 
-Рекомендуемая конфигурация:
+Metadata — Read-only
 
-- **Request user authorization (OAuth) during installation** — включить
-- **Expire user authorization tokens** — можно оставить выключенным на этапе локальной разработки
-- **Enable Device Flow** — выключить
-- **Redirect on update** — можно оставить выключенным
+Contents — Read and write
 
-### Webhook
+Pull requests — Read and write
 
-Если приложение не обрабатывает webhook-события, webhook лучше не включать.
+Issues — Read and write
 
-Рекомендуемая конфигурация:
+Commit statuses — Read and write
 
-- **Webhook Active** — выключить
-- **Webhook URL** — не заполнять
-- **Secret** — не заполнять
+Checks — Read and write
 
-### Repository permissions
+Actions — Read-only
 
-Для текущего функционала Devex достаточно только следующих прав:
+Workflows — Read and write
 
-- **Contents** — `Read and write`
-- **Pull requests** — `Read and write`
-- **Metadata** — `Read-only` (обязательное разрешение GitHub)
+Pages — Read-only
 
-Этого достаточно, чтобы:
+Deployments — Read-only
 
-- читать дерево репозитория и содержимое файлов
-- создавать отдельную ветку
-- сохранять изменения в файл
-- открывать Pull Request из интерфейса
+Code scanning alerts — Read-only
 
-### Что не нужно включать
+Dependabot alerts — Read-only
 
-Если приложение пока не работает с Actions, workflow-файлами, issues, checks, deployments, secrets, pages или настройками репозитория, эти permissions лучше не выдавать.
+Secret scanning alerts — Read-only
 
-Обычно **не нужны**:
+Discussions — Read-only или выключить.
 
-- `Administration`
-- `Actions`
-- `Agent tasks`
-- `Artifact metadata`
-- `Checks`
-- `Commit statuses`
-- `Codespaces`
-- `Deployments`
-- `Environments`
-- `Issues`
-- `Pages`
-- `Projects`
-- `Secrets`
-- `Variables`
-- `Webhooks`
-- `Workflows`
+Packages — Read-only
+
+Webhooks — выключить.
+
+Administration — не давать.
+
+Secrets — не давать.
+
+Variables — выключить или Read-only.
+
+Environments — выключить или Read-only.
+Organization permissions: ничего не давай.
+
+Account permissions:
+Email addresses — Read-only, только если нужен email пользователя.
+Profile — Read-only, если нужен username/avatar/name.
+
+Subscribe to events:
+
+Installation
+Installation repositories
+Pull request
+Push
+Issues — если используешь issues
+Issue comment — если хочешь команды типа /devex fix в issue/PR comments
+Check run / Check suite — если работаешь с checks
+Workflow run — если хочешь ловить результат CI
+Repository — опционально
 
 Чем меньше прав выдано приложению, тем безопаснее установка.
 
