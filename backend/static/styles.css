@@ -2,9 +2,9 @@
   --bg: #f7f7f4;
   --panel: #fcfcfa;
   --line: #d5d5cf;
-  --line-strong: #a8a8a0;
+  --line-strong: #a8a0;
   --text: #111111;
-  --muted: #686866;
+  --muted: #6866;
   --accent: #111111;
   --accent-text: #ffffff;
   --success: #0f766e;
@@ -402,7 +402,7 @@ textarea {
   display: grid;
   gap: 1px;
   padding-left: 8px;
-  border-left: 1px solid #e7e7e1;
+  border-left: 1px solid #e7e1;
 }
 
 .tree-folder summary {
