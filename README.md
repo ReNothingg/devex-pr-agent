@@ -14,6 +14,30 @@ python backend/app.py
 
 После запуска приложение будет доступно по адресу `http://localhost:5000`.
 
+## Локальная разработка
+
+Для локальной разработки вам потребуется установить зависимости и запустить приложение.
+
+1.  **Установка зависимостей:**
+    ```bash
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+    ```
+
+2.  **Настройка переменных окружения:**
+    Скопируйте пример файла `.env` и настройте его:
+    ```bash
+    cp .env.example .env
+    ```
+    Затем отредактируйте файл `.env` согласно вашим настройкам (см. раздел "Настройка `.env`" ниже).
+
+3.  **Запуск приложения:**
+    ```bash
+    python backend/app.py
+    ```
+    После запуска приложение будет доступно по адресу `http://localhost:5000`.
+
 ## Настройка `.env`
 
 Мин. конфигурация уже показана в `.env.example`.
@@ -79,8 +103,7 @@ Secrets — не давать.
 
 Variables — выключить или Read-only.
 
-Environments — выключить или Read-only.
-Organization permissions: ничего не давай.
+Environments — выключить или Read-only.Organization permissions: ничего не давай.
 
 Account permissions:
 Email addresses — Read-only, только если нужен email пользователя.
